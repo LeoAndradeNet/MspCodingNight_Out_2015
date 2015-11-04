@@ -1,0 +1,112 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Futebol</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <br />
+        <div class="panel panel-default">
+            <div class="panel-heading text-center">
+                <h1>JOGO AO VIVO</h1>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-3 text-right">
+                        <h2>Brasil</h2>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="panel panel-default">
+                            <div class="panel-body text-center">
+                                <h3 id="brasil">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 text-center">
+                        <h2>X</h2>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="panel panel-default">
+                            <div class="panel-body text-center">
+                                <h3 id="alemanha">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <h2>Alemanha</h2>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading text-center">LANCE A LANCE</div>
+                            <div id="lance" class="panel-body">                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
+    <!-- SignalR -->
+    <script src="~/Scripts/jquery-1.9.1.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.2.0.js"></script>
+    <script src="/signalr/hubs" type="text/javascript"></script>
+
+    <script type="text/javascript">
+        $(function () {
+
+            var time1 = 0;
+            var time2 = 0;
+            
+            var placarHub = $.connection.jogo;
+
+            placarHub.client.AletaGol = function (time) {
+
+                switch (time) {
+                    case 1:
+                        time1++;
+                        $('#brasil').text(time1);
+                        Lance("<b>GOOOOLLL DO BRASIL!!!!</b>");
+                        break;
+                    case 2:
+                        time2++;
+                        $('#alemanha').text(time2);
+                        Lance("<b>GOOOOLLL DA ALEMANHA!!!!</b>");
+                        break;                    
+                }
+            }
+
+            placarHub.client.AletaLance = function (texto) {
+                Lance(texto);
+            }
+
+            function Lance(texto)
+            {
+                var lance = $('#lance');
+                lance.html("<div class='alert alert-info' role='alert'><p>" + texto + "</p></div>" + lance.html());
+            }
+
+            
+
+            $.connection.hub.start();
+
+        });
+    </script>
+</body>
+</html>

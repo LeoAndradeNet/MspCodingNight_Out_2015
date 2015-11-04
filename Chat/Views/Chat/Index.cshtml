@@ -1,0 +1,61 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <script src="~/Scripts/jquery-1.6.4.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.2.0.js"></script>
+    <script src="/signalr/hubs" type="text/javascript"></script>
+</head>
+<body>
+    <div>
+        <label for="message">Mensagem</label>
+        <input type="text" id="message" />
+
+        <br />
+        <input type="button" value="Enviar" id="send" />
+    </div>
+    <div id="chatBody">
+    </div>
+
+
+    <script type="text/javascript">
+        $(function () {
+            var userName;
+            var chatHub = $.connection.chat;
+
+            chatHub.client.publishMessage = function (name, message) {
+                var chatBody = $('#chatBody');
+                chatBody.html("<b>" + name + " </b> - " + message + "<br>" + chatBody.html());
+            }                      
+            
+            $('#message').keypress(function (event) {
+                if (event.which == 13)
+                    send();
+            });
+
+            $('#send').click(function () {
+                send();
+            });
+
+            function send(){
+                chatHub.server.sendMessage(userName, $('#message').val());
+                $('#message').val('').focus();
+            }
+
+            userName = prompt('Qual o seu nome?', '');
+            $('#message').focus();
+
+            $.connection.hub.start();
+        });
+
+
+    </script>
+</body>
+</html>
