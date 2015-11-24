@@ -9,20 +9,52 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Index</title>
-    <script src="~/Scripts/jquery-1.6.4.js"></script>
+
+    <script src="~/Scripts/jquery-1.9.1.js"></script>
     <script src="~/Scripts/jquery.signalR-2.2.0.js"></script>
     <script src="/signalr/hubs" type="text/javascript"></script>
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body>
-    <div>
-        <label for="message">Mensagem</label>
-        <input type="text" id="message" />
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Chat</a>
+                <p id="userName" class="navbar-text"></p>
+            </div>            
+        </div>
+    </nav>
 
-        <br />
-        <input type="button" value="Enviar" id="send" />
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-body" style="max-height: 300px; min-height:300px; overflow-y: scroll;">
+                        <div id="chatBody">
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <label for="message">Mensagem</label>
+
+                        <div class="input-group">
+                            <input type="text" id="message" class="form-control" />
+                            <div class="input-group-btn">
+                                <input type="button" value="Enviar" id="send" class="btn btn-primary" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="chatBody">
-    </div>
+
 
 
     <script type="text/javascript">
@@ -33,8 +65,8 @@
             chatHub.client.publishMessage = function (name, message) {
                 var chatBody = $('#chatBody');
                 chatBody.html("<b>" + name + " </b> - " + message + "<br>" + chatBody.html());
-            }                      
-            
+            }
+
             $('#message').keypress(function (event) {
                 if (event.which == 13)
                     send();
@@ -44,18 +76,25 @@
                 send();
             });
 
-            function send(){
+            function send() {
                 chatHub.server.sendMessage(userName, $('#message').val());
                 $('#message').val('').focus();
             }
-
+                        
             userName = prompt('Qual o seu nome?', '');
-            $('#message').focus();
 
-            $.connection.hub.start();
+            $.connection.hub.start()
+                .done(function () { chatHub.server.sendMessage(userName, 'Acabou de entrar na sala!'); })
+                .fail(function () { console.log('Could not Connect!'); });
+
+            $("#userName").html(userName);            
+            $('#message').focus();  
+
         });
 
 
     </script>
+
+
 </body>
 </html>
